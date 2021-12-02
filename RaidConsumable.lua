@@ -50,7 +50,7 @@ local FULL_ITEMS = {
     ["Elixir of Frost Power"] = 10,
     ["Mageblood Potion"] = 10,
     ["Elixir of Fortitude"] = 10,
-    ["Brilliant Wizard Oil"] = 8,
+    ["Brilliant Wizard Oil"] = 2,
     ["Limited Invulnerability Potion"] = 10,
     ["Major Healing Potion"] = 10,
     ["Major Mana Potion"] = 15,
@@ -63,7 +63,7 @@ local FULL_ITEMS = {
   },
   ["kkari raid"] = {
     ["Mageblood Potion"] = 10,
-    ["Brilliant Mana Oil"] = 8,
+    ["Brilliant Mana Oil"] = 2,
     ["Major Healing Potion"] = 5,
     ["Major Mana Potion"] = 20,
     ["Nightfin Soup"] = 20,
@@ -131,10 +131,10 @@ local function FillItems(haveItems, needItems)
     for s = 1, GetContainerNumSlots(b) do
       local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(b, s)
       if itemLink then
-        k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
+        k, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
         if needItems[k] then
           needCount = needItems[k] - (haveItems[k] or 0) - (fillItems[k] or 0)
-          if 0 < needCount and itemCount <= needCount then
+          if itemCount == needCount or (itemCount == stackCount and stackCount < needCount) then
             UseContainerItem(b, s)
             fillItems[k] = (fillItems[k] or 0) + itemCount
             usedSlot[""..b..s] = true
@@ -152,7 +152,26 @@ local function FillItems(haveItems, needItems)
           k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
           if needItems[k] then
             needCount = needItems[k] - (haveItems[k] or 0) - (fillItems[k] or 0)
-            if 0 < needCount and  itemCount > needCount then
+            if itemCount < needCount then
+              UseContainerItem(b, s)
+              fillItems[k] = (fillItems[k] or 0) + itemCount
+              usedSlot[""..b..s] = true
+            end
+          end
+        end
+      end
+    end
+  end
+
+  for b = 0,4 do
+    for s = 1, GetContainerNumSlots(b) do
+      if not usedSlot[""..b..s] then
+        local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(b, s)
+        if itemLink then
+          k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
+          if needItems[k] then
+            needCount = needItems[k] - (haveItems[k] or 0) - (fillItems[k] or 0)
+            if 0 < needCount and itemCount > needCount then
               SplitItem(b, s, itemCount - needCount)
               return nil
             end
