@@ -1,0 +1,7 @@
+## Interface: 11401
+## Title: RaidConsumable
+## Notes: Manages consumables using mail
+## Author: Junsa
+## Version: 0.0.1
+
+RaidConsumable.lua
