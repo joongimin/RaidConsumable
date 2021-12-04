@@ -204,7 +204,10 @@ local function NeedItems(fullItems, haveItems)
   local needItems = {}
 
   for k, v in pairs(fullItems) do
-    needItems[k] = v - (haveItems[k] or 0)
+    local needCount = v - (haveItems[k] or 0)
+    if needCount > 0 then
+      needItems[k] = needCount
+    end
   end
 
   return needItems
