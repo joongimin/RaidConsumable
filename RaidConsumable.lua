@@ -123,7 +123,7 @@ local function SplitItem(bag, slot, count)
   PickupContainerItem(freeBag, freeSlot)
 end
 
-local function FillItems(haveItems, needItems)
+local function FillItems(needItems)
   local fillItems = {}
   local usedSlot = {}
 
@@ -133,7 +133,7 @@ local function FillItems(haveItems, needItems)
       if itemLink then
         k, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
         if needItems[k] then
-          needCount = needItems[k] - (haveItems[k] or 0) - (fillItems[k] or 0)
+          needCount = needItems[k] - (fillItems[k] or 0)
           if itemCount == needCount or (itemCount == stackCount and stackCount < needCount) then
             UseContainerItem(b, s)
             fillItems[k] = (fillItems[k] or 0) + itemCount
@@ -151,7 +151,7 @@ local function FillItems(haveItems, needItems)
         if itemLink then
           k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
           if needItems[k] then
-            needCount = needItems[k] - (haveItems[k] or 0) - (fillItems[k] or 0)
+            needCount = needItems[k] - (fillItems[k] or 0)
             if itemCount < needCount then
               UseContainerItem(b, s)
               fillItems[k] = (fillItems[k] or 0) + itemCount
@@ -170,7 +170,7 @@ local function FillItems(haveItems, needItems)
         if itemLink then
           k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
           if needItems[k] then
-            needCount = needItems[k] - (haveItems[k] or 0) - (fillItems[k] or 0)
+            needCount = needItems[k] - (fillItems[k] or 0)
             if 0 < needCount and itemCount > needCount then
               SplitItem(b, s, itemCount - needCount)
               return nil
@@ -184,30 +184,41 @@ local function FillItems(haveItems, needItems)
   return fillItems
 end
 
-local function FillMail(inSubject, haveItems, needItems, fillItems)
+local function FillMail(inSubject, haveItems, fullItems, fillItems)
   local recipient = string.sub(inSubject, 0, string.find(inSubject, " ") - 1)
   SendMailNameEditBox:SetText(recipient)
   SendMailSubjectEditBox:SetText(inSubject)
 
   local mailContent = ""
-  for itemName, needCount in pairs(needItems) do
+  for itemName, fullCount in pairs(fullItems) do
     local haveCount = haveItems[itemName] or 0
     local fillCount = fillItems[itemName] or 0
     local shortIndicator = ""
-    if haveCount + fillCount < needCount then shortIndicator = "*" end
-    mailContent = mailContent..itemName..shortIndicator.."\n("..haveCount.."+"..fillCount..")/"..needCount.."\n\n"
+    if haveCount + fillCount < fullCount then shortIndicator = "*" end
+    mailContent = mailContent..itemName..shortIndicator.."\n("..haveCount.."+"..fillCount..")/"..fullCount.."\n\n"
   end
   SendMailBodyEditBox:SetText(mailContent)
+end
+
+local function NeedItems(fullItems, haveItems)
+  local needItems = {}
+
+  for k, v in pairs(fullItems) do
+    needItems[k] = v - (haveItems[k] or 0)
+  end
+
+  return needItems
 end
 
 local function RaidConsumableHandler(inSubject)
   ClearSendMail()
 
   local haveItems = ReadItems(inSubject)
-  local needItems = FULL_ITEMS[inSubject]
-  local fillItems = FillItems(haveItems, needItems)
+  local fullItems = FULL_ITEMS[inSubject]
+  local needItems = NeedItems(fullItems, haveItems)
+  local fillItems = FillItems(needItems)
   if fillItems then
-    FillMail(inSubject, haveItems, needItems, fillItems)
+    FillMail(inSubject, haveItems, fullItems, fillItems)
   end
 end
 
