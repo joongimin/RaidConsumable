@@ -254,20 +254,50 @@ local function NeedItems(fullItems, haveItems)
 end
 
 local function RaidConsumableHandler(inSubject)
-  ClearSendMail()
+  Start(inSubject)
+end
 
-  local haveItems = ReadItems(inSubject)
-  local fullItems = FULL_ITEMS[inSubject]
-  local needItems = NeedItems(fullItems, haveItems)
+do
+  local f = CreateFrame('Frame')
+  local process = coroutine.create(function() end)
+  local suspended = false
 
-  if SplitItems(needItems) then
-    return
+  function Start(inSubject)
+    ClearSendMail()
+
+    local haveItems = ReadItems(inSubject)
+    local fullItems = FULL_ITEMS[inSubject]
+    local needItems = NeedItems(fullItems, haveItems)
+    process = coroutine.create(function()
+      while true do
+        suspended = false
+        if not SplitItems(needItems) then
+          break
+        end
+
+        if not suspended then
+          coroutine.yield()
+        end
+      end
+
+      local fillItems = FillItems(needItems)
+      if fillItems then
+        FillMail(inSubject, haveItems, fullItems, fillItems)
+      end
+    end)
+    f:Show()
   end
 
-  local fillItems = FillItems(needItems)
-  if fillItems then
-    FillMail(inSubject, haveItems, fullItems, fillItems)
-  end
+  f:SetScript('OnUpdate', function()
+    print('OnUpdate', coroutine.status(process))
+    if coroutine.status(process) == 'suspended' then
+      suspended = true
+      coroutine.resume(process)
+    end
+    if coroutine.status(process) == 'dead' then
+      f:Hide()
+    end
+  end)
 end
 
 SlashCmdList["RAIDCONSUMABLE"] = RaidConsumableHandler;
