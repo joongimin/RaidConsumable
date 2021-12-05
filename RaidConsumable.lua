@@ -210,7 +210,6 @@ local function FillItems(needItems)
       end
 
       for i, v in ipairs(partialStacks) do
-        print(needCount, fillCount, v['count'])
         if needCount - fillCount > v['count'] then
           UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
