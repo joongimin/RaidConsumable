@@ -235,7 +235,7 @@ local function FillMail(inSubject, haveItems, fullItems, fillItems)
     local fillCount = fillItems[itemName] or 0
     local shortIndicator = ""
     if haveCount + fillCount < fullCount then shortIndicator = "*" end
-    mailContent = mailContent..itemName..shortIndicator.."\n("..haveCount.."+"..fillCount..")/"..fullCount.."\n\n"
+    mailContent = mailContent..itemName..shortIndicator.." ("..haveCount.."+"..fillCount..")/"..fullCount.."\n"
   end
   SendMailBodyEditBox:SetText(mailContent)
 end
@@ -289,7 +289,6 @@ do
   end
 
   f:SetScript('OnUpdate', function()
-    print('OnUpdate', coroutine.status(process))
     if coroutine.status(process) == 'suspended' then
       suspended = true
       coroutine.resume(process)
