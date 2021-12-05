@@ -123,61 +123,101 @@ local function SplitItem(bag, slot, count)
   PickupContainerItem(freeBag, freeSlot)
 end
 
+-- function dump(o)
+--   if type(o) == 'table' then
+--      local s = '{ '
+--      for k,v in pairs(o) do
+--         if type(k) ~= 'number' then k = '"'..k..'"' end
+--         s = s .. '['..k..'] = ' .. dump(v) .. ','
+--      end
+--      return s .. '} '
+--   else
+--      return tostring(o)
+--   end
+-- end
+
+local function GetStacks(itemLink)
+  local fullStacks = {}
+  local partialStacks = {}
+
+  if itemLink then
+    local _, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
+    for bag = 0,4 do
+      for slot = 1, GetContainerNumSlots(bag) do
+        local _, count, _, _, _, _, link = GetContainerItemInfo(bag, slot)
+        if itemLink == link then
+          if count == stackCount then
+            fullStacks[#fullStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
+          else
+            partialStacks[#partialStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
+          end
+        end
+      end
+    end
+  end
+
+  return fullStacks, partialStacks
+end
+
+local function SplitItems(needItems)
+  for name, needCount in pairs(needItems) do
+    local _, itemLink, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(name)
+    if stackCount then
+      local needFull = math.floor(needCount / stackCount)
+      local needPartial = needCount - needFull * stackCount
+
+      local fullStacks, partialStacks = GetStacks(itemLink)
+      if #partialStacks < 2 then
+        local partialStack = partialStacks[1] or {['count']=0}
+        if needFull <= #fullStacks and needPartial < partialStack['count'] then
+          SplitItem(partialStack['bag'], partialStack['slot'], needPartial)
+          return true
+        elseif needFull < #fullStacks and needPartial > partialStack['count'] then
+          SplitItem(fullStacks[1]['bag'], fullStacks[1]['slot'], needPartial)
+          return true
+        end
+      end
+    end
+  end
+
+  return false
+end
+
 local function FillItems(needItems)
   local fillItems = {}
   local usedSlot = {}
 
-  for b = 0,4 do
-    for s = 1, GetContainerNumSlots(b) do
-      local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(b, s)
-      if itemLink then
-        k, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
-        if needItems[k] then
-          needCount = needItems[k] - (fillItems[k] or 0)
-          if itemCount == needCount or (itemCount == stackCount and stackCount < needCount) then
-            UseContainerItem(b, s)
-            fillItems[k] = (fillItems[k] or 0) + itemCount
-            usedSlot[""..b..s] = true
-          end
-        end
-      end
-    end
-  end
+  for name, needCount in pairs(needItems) do
+    local _, itemLink, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(name)
+    if itemLink then
+      local fillCount = 0
+      local needFull = math.floor(needCount / stackCount)
+      local needPartial = needCount - needFull * stackCount
 
-  for b = 0,4 do
-    for s = 1, GetContainerNumSlots(b) do
-      if not usedSlot[""..b..s] then
-        local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(b, s)
-        if itemLink then
-          k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
-          if needItems[k] then
-            needCount = needItems[k] - (fillItems[k] or 0)
-            if itemCount < needCount then
-              UseContainerItem(b, s)
-              fillItems[k] = (fillItems[k] or 0) + itemCount
-              usedSlot[""..b..s] = true
-            end
-          end
+      local fullStacks, partialStacks = GetStacks(itemLink)
+      for i, v in ipairs(fullStacks) do
+        if needCount - fillCount >= v['count'] then
+          UseContainerItem(v['bag'], v['slot'])
+          fillCount = fillCount + v['count']
         end
       end
-    end
-  end
 
-  for b = 0,4 do
-    for s = 1, GetContainerNumSlots(b) do
-      if not usedSlot[""..b..s] then
-        local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(b, s)
-        if itemLink then
-          k, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
-          if needItems[k] then
-            needCount = needItems[k] - (fillItems[k] or 0)
-            if 0 < needCount and itemCount > needCount then
-              SplitItem(b, s, itemCount - needCount)
-              return nil
-            end
-          end
+      for i, v in ipairs(partialStacks) do
+        if needCount - fillCount == v['count'] then
+          UseContainerItem(v['bag'], v['slot'])
+          fillCount = fillCount + v['count']
         end
       end
+
+      for i, v in ipairs(partialStacks) do
+        print(needCount, fillCount, v['count'])
+        if needCount - fillCount > v['count'] then
+          UseContainerItem(v['bag'], v['slot'])
+          fillCount = fillCount + v['count']
+        end
+      end
+
+      fillItems[name] = fillCount
     end
   end
 
@@ -219,6 +259,11 @@ local function RaidConsumableHandler(inSubject)
   local haveItems = ReadItems(inSubject)
   local fullItems = FULL_ITEMS[inSubject]
   local needItems = NeedItems(fullItems, haveItems)
+
+  if SplitItems(needItems) then
+    return
+  end
+
   local fillItems = FillItems(needItems)
   if fillItems then
     FillMail(inSubject, haveItems, fullItems, fillItems)
