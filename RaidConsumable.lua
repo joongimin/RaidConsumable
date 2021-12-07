@@ -169,7 +169,7 @@ local function SplitItems(needItems)
       local fullStacks, partialStacks = GetStacks(itemLink)
       if #partialStacks < 2 then
         local partialStack = partialStacks[1] or {['count']=0}
-        if needFull <= #fullStacks and needPartial < partialStack['count'] then
+        if needFull <= #fullStacks and 0 < needPartial and needPartial < partialStack['count'] then
           SplitItem(partialStack['bag'], partialStack['slot'], needPartial)
           return true
         elseif needFull < #fullStacks and needPartial > partialStack['count'] then
