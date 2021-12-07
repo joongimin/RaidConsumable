@@ -68,6 +68,7 @@ local FULL_ITEMS = {
     ["Major Mana Potion"] = 20,
     ["Nightfin Soup"] = 20,
     ["Flask of Distilled Wisdom"] = 5,
+    ["Limited Invulnerability Potion"] = 5,
   },
   ["kkari mc"] = {
     ["Greater Fire Protection Potion"] = 10,
