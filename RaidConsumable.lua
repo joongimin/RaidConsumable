@@ -50,7 +50,7 @@ local FULL_ITEMS = {
     ["Elixir of Frost Power"] = 10,
     ["Mageblood Potion"] = 10,
     ["Elixir of Fortitude"] = 10,
-    ["Brilliant Wizard Oil"] = 2,
+    ["Brilliant Wizard Oil"] = 3,
     ["Limited Invulnerability Potion"] = 10,
     ["Major Healing Potion"] = 10,
     ["Major Mana Potion"] = 15,
@@ -63,7 +63,7 @@ local FULL_ITEMS = {
   },
   ["kkari raid"] = {
     ["Mageblood Potion"] = 10,
-    ["Brilliant Mana Oil"] = 2,
+    ["Brilliant Mana Oil"] = 3,
     ["Major Healing Potion"] = 5,
     ["Major Mana Potion"] = 20,
     ["Nightfin Soup"] = 20,
@@ -96,9 +96,9 @@ local function ReadItems(inSubject)
     if subject == inSubject then
       for itemIdx = 1,12 do
         itemName, _, _, count, _, _ = GetInboxItem(mailIdx, itemIdx)
-        if not itemName then break end
-
-        items[itemName] = (items[itemName] or 0) + count
+        if itemName then
+          items[itemName] = (items[itemName] or 0) + count
+        end
       end
     end
   end
