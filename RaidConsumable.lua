@@ -65,7 +65,7 @@ local FULL_ITEMS = {
     ["Mageblood Potion"] = 10,
     ["Brilliant Mana Oil"] = 3,
     ["Major Healing Potion"] = 5,
-    ["Major Mana Potion"] = 20,
+    ["Major Mana Potion"] = 25,
     ["Nightfin Soup"] = 20,
     ["Flask of Distilled Wisdom"] = 5,
     ["Limited Invulnerability Potion"] = 5,
@@ -187,6 +187,7 @@ end
 local function FillItems(needItems)
   local fillItems = {}
   local usedSlot = {}
+  local mailSlotsSize = 12
 
   for name, needCount in pairs(needItems) do
     local _, itemLink, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(name)
@@ -197,23 +198,26 @@ local function FillItems(needItems)
 
       local fullStacks, partialStacks = GetStacks(itemLink)
       for i, v in ipairs(fullStacks) do
-        if needCount - fillCount >= v['count'] then
+        if needCount - fillCount >= v['count'] and mailSlotsSize > 0 then
           UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
+          mailSlotsSize = mailSlotsSize - 1
         end
       end
 
       for i, v in ipairs(partialStacks) do
-        if needCount - fillCount == v['count'] then
+        if needCount - fillCount == v['count'] and mailSlotsSize > 0 then
           UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
+          mailSlotsSize = mailSlotsSize - 1
         end
       end
 
       for i, v in ipairs(partialStacks) do
-        if needCount - fillCount > v['count'] then
+        if needCount - fillCount > v['count'] and mailSlotsSize > 0 then
           UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
+          mailSlotsSize = mailSlotsSize - 1
         end
       end
 
