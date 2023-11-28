@@ -614,6 +614,15 @@ local FULL_ITEMS = {
   },
 }
 
+local function GetItemIdFromName(name)
+  return ITEM_ID[name]
+end
+
+local function GetItemStackCount(itemId)
+  local _, _, _, _, _, _, _, stackCount = GetItemInfo(itemId)
+  return stackCount
+end
+
 local function GetItemInfoFromName(name)
   local itemId = ITEM_ID[name]
   if not itemId then
@@ -650,7 +659,7 @@ end
 local function GetFreeSlot()
   for b = 0,4 do
     for s = 1, C_Container.GetContainerNumSlots(b) do
-      if not C_Container.GetContainerItemLink(b, s) then
+      if not C_Container.GetContainerItemID(b, s) then
         return b, s
       end
     end
@@ -662,7 +671,7 @@ end
 local function GetFreeBankSlot()
   for _, b in ipairs({-1, 5, 6, 7, 8, 9, 10}) do
     for s = 1, C_Container.GetContainerNumSlots(b) do
-      if not C_Container.GetContainerItemLink(b, s) then
+      if not C_Container.GetContainerItemID(b, s) then
         return b, s
       end
     end
@@ -690,16 +699,16 @@ function dump(o)
   end
 end
 
-local function GetStacks(itemLink)
+local function GetStacks(itemId)
   local fullStacks = {}
   local partialStacks = {}
 
-  if itemLink then
-    local _, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
+  if itemId then
+    local stackCount = GetItemStackCount(itemId)
     for bag = 0,4 do
       for slot = 1, C_Container.GetContainerNumSlots(bag) do
         local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
-        if containerInfo and itemLink == containerInfo.hyperlink then
+        if containerInfo and itemId == containerInfo.itemID then
           if containerInfo.stackCount == stackCount then
             fullStacks[#fullStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=containerInfo.stackCount}
           else
@@ -713,16 +722,16 @@ local function GetStacks(itemLink)
   return fullStacks, partialStacks
 end
 
-local function GetBankStacks(itemLink)
+local function GetBankStacks(itemId)
   local fullStacks = {}
   local partialStacks = {}
 
-  if itemLink then
-    local _, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
+  if itemId then
+    local stackCount = GetItemStackCount(itemId)
     for _, bag in ipairs({-1, 5, 6, 7, 8, 9, 10}) do
       for slot = 1, C_Container.GetContainerNumSlots(bag) do
         local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
-        if containerInfo and itemLink == containerInfo.hyperlink then
+        if containerInfo and itemId == containerInfo.itemID then
           if containerInfo.stackCount == stackCount then
             fullStacks[#fullStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
           else
@@ -738,12 +747,13 @@ end
 
 local function SplitItems(needItems)
   for name, needCount in pairs(needItems) do
-    local _, itemLink, _, _, _, _, _, stackCount, _, _, _ = GetItemInfoFromName(name)
+    local itemId = GetItemIdFromName(name);
+    local stackCount = GetItemStackCount(itemId)
     if stackCount then
       local needFull = math.floor(needCount / stackCount)
       local needPartial = needCount - needFull * stackCount
 
-      local fullStacks, partialStacks = GetStacks(itemLink)
+      local fullStacks, partialStacks = GetStacks(itemId)
       if #partialStacks < 2 then
         local partialStack = partialStacks[1] or {['count']=0}
         if needFull <= #fullStacks and 0 < needPartial and needPartial < partialStack['count'] then
@@ -766,13 +776,14 @@ local function FillItems(needItems)
   local mailSlotsSize = 12
 
   for name, needCount in pairs(needItems) do
-    local _, itemLink, _, _, _, _, _, stackCount, _, _, _ = GetItemInfoFromName(name)
-    if itemLink then
+    local itemId = GetItemIdFromName(name)
+    local stackCount = GetItemStackCount(itemId)
+    if itemId then
       local fillCount = 0
       local needFull = math.floor(needCount / stackCount)
       local needPartial = needCount - needFull * stackCount
 
-      local fullStacks, partialStacks = GetStacks(itemLink)
+      local fullStacks, partialStacks = GetStacks(itemId)
       for i, v in ipairs(fullStacks) do
         if needCount - fillCount >= v['count'] and mailSlotsSize > 0 then
           C_Container.UseContainerItem(v['bag'], v['slot'])
@@ -850,14 +861,14 @@ local function NeedItems(fullItems, haveItems)
   return needItems
 end
 
-local function GetBagItemsCount(itemLink)
+local function GetBagItemsCount(itemId)
   local result = 0
 
-  if itemLink then
+  if itemId then
     for bag = 0,4 do
       for slot = 1, C_Container.GetContainerNumSlots(bag) do
         local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
-        if containerInfo and itemLink == containerInfo.hyperlink then
+        if containerInfo and itemId == containerInfo.itemID then
           result = result + containerInfo.stackCount
         end
       end
@@ -867,14 +878,14 @@ local function GetBagItemsCount(itemLink)
   return result
 end
 
-local function GetBankItemsCount(itemLink)
+local function GetBankItemsCount(itemId)
   local result = 0
 
-  if itemLink then
+  if itemId then
     for _, bag in ipairs({-1, 5, 6, 7, 8, 9, 10}) do
       for slot = 1, C_Container.GetContainerNumSlots(bag) do
         local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
-        if containerInfo and itemLink == containerInfo.hyperlink then
+        if containerInfo and itemId == containerInfo.itemID then
           result = result + containerInfo.stackCount
         end
       end
@@ -886,12 +897,14 @@ end
 
 local function OrganizeStock()
   for itemName, fullCount in pairs(FULL_ITEMS["stock"]) do
-    local _, itemLink, _, _, _, _, _, stackCount, _, _, _ = GetItemInfoFromName(itemName)
-    local bagCount = GetBagItemsCount(itemLink)
-    local bankCount = GetBankItemsCount(itemLink)
+    local itemId = GetItemIdFromName(itemName)
+    local stackCount = GetItemStackCount(itemId)
+
+    local bagCount = GetBagItemsCount(itemId)
+    local bankCount = GetBankItemsCount(itemId)
 
     if bagCount > fullCount then
-      local fullStacksBag, partialStacksBag = GetStacks(itemLink)
+      local fullStacksBag, partialStacksBag = GetStacks(itemId)
       local moveCount = bagCount - fullCount
 
       if #fullStacksBag > 0 and moveCount >= stackCount then
@@ -911,8 +924,8 @@ local function OrganizeStock()
         return true
       end
     elseif bagCount < fullCount and bankCount > 0 then
-      local _, partialStacksBag = GetStacks(itemLink)
-      local fullStacksBank, partialStacksBank = GetBankStacks(itemLink)
+      local _, partialStacksBag = GetStacks(itemId)
+      local fullStacksBank, partialStacksBank = GetBankStacks(itemId)
 
       if #partialStacksBank > 0 then
         C_Container.PickupContainerItem(partialStacksBank[1]['bag'], partialStacksBank[1]['slot'])
@@ -937,8 +950,8 @@ end
 local function PrintStock()
   local messages = {}
   for itemName, fullCount in pairs(FULL_ITEMS["stock"]) do
-    local _, itemLink = GetItemInfoFromName(itemName)
-    local count = GetBagItemsCount(itemLink)
+    local itemId = GetItemIdFromName(itemName)
+    local count = GetBagItemsCount(itemId)
 
     if count < fullCount then
       table.insert(messages, itemName.." ("..count.."/"..fullCount..")")
