@@ -34,8 +34,10 @@ local SHORT_NAMES = {
 }
 
 local ITEM_ID = {
+  ["Blasted Boar Lung"] = 8392,
   ["Brilliant Mana Oil"] = 20748,
   ["Brilliant Wizard Oil"] = 20749,
+  ["Chillwind E'ko"] = 12434,
   ["Chronoboon Displacer"] = 184937,
   ["Dense Dynamite"] = 18641,
   ["Dense Sharpening Stone"] = 12404,
@@ -49,12 +51,13 @@ local ITEM_ID = {
   ["Elixir of Superior Defense"] = 13445,
   ["Elixir of the Mongoose"] = 13452,
   ["Flask of Distilled Wisdom"] = 13511,
+  ["Flask of Petrification"] = 13506,
   ["Flask of Supreme Power"] = 13512,
   ["Flask of the Titans"] = 13510,
-  ["Flask of Petrification"] = 13506,
   ["Free Action Potion"] = 5634,
   ["Frost Oil"] = 3829,
   ["Frost Protection Potion"] = 6050,
+  ["Frostmaul E'ko"] = 12436,
   ["Frozen Rune"] = 22682,
   ["Gift of Arthas"] = 9088,
   ["Goblin Sapper Charge"] = 10646,
@@ -65,11 +68,10 @@ local ITEM_ID = {
   ["Greater Frost Protection Potion"] = 13456,
   ["Greater Nature Protection Potion"] = 13458,
   ["Greater Shadow Protection Potion"] = 13459,
-  ["Hourglass Sand"] = 19183,
-  ["Nature Protection Potion"] = 6052,
-  ["Shadow Protection Potion"] = 6048,
   ["Greater Stoneshield Potion"] = 13455,
   ["Grilled Squid"] = 13928,
+  ["Hourglass Sand"] = 19183,
+  ["Ice Thistle E'ko"] = 12435,
   ["Limited Invulnerability Potion"] = 3387,
   ["Living Action Potion"] = 20008,
   ["Mageblood Potion"] = 20007,
@@ -78,14 +80,20 @@ local ITEM_ID = {
   ["Major Rejuvenation Potion"] = 18253,
   ["Major Troll's Blood Potion"] = 20004,
   ["Mighty Rage Potion"] = 13442,
+  ["Nature Protection Potion"] = 6052,
   ["Nightfin Soup"] = 13931,
   ["Oil of Immolation"] = 8956,
   ["Powerful Anti-Venom"] = 19440,
   ["Rumsey Rum Black Label"] = 21151,
   ["Runn Tum Tuber Surprise"] = 18254,
+  ["Scorpok Pincer"] = 8393,
+  ["Shadow Protection Potion"] = 6048,
+  ["Shardtooth E'ko"] = 12432,
   ["Smoked Desert Dumplings"] = 20452,
+  ["Snickerfang Jowl"] = 8391,
   ["Swiftness Potion"] = 2459,
-  ["Winterfall Firewater"] = 12820,
+  ["Winterfall E'ko"] = 12431,
+  ["Winterfall Firewater"] = 12820
 }
 
 local FULL_ITEMS = {
@@ -142,36 +150,43 @@ local FULL_ITEMS = {
   --   ["Winterfall Firewater"] = 10,
   -- },
   ["stock"] = {
+    ["Blasted Boar Lung"] = 20,
+    ["Chillwind E'ko"] = 20,
     ["Chronoboon Displacer"] = 5,
     ["Dense Dynamite"] = 20,
     ["Dense Sharpening Stone"] = 20,
+    ["Dense Weightstone"] = 20,
     ["Dirge's Kickin' Chimaerok Chops"] = 20,
     ["Elemental Sharpening Stone"] = 20,
-    ["Elixir of Fortitude"] = 10,
-    ["Elixir of Superior Defense"] = 10,
+    ["Elixir of Fortitude"] = 5,
+    ["Elixir of Superior Defense"] = 5,
     ["Elixir of the Mongoose"] = 10,
-    ["Flask of the Titans"] = 5,
-    ["Flask of Petrification"] = 5,
+    ["Flask of Petrification"] = 1,
+    ["Flask of the Titans"] = 2,
     ["Free Action Potion"] = 5,
-    ["Frost Oil"] = 5,
-    ["Frost Protection Potion"] = 5,
+    ["Frostmaul E'ko"] = 20,
     ["Frozen Rune"] = 20,
     ["Gift of Arthas"] = 5,
-    ["Goblin Sapper Charge"] = 10,
-    ["Greater Arcane Elixir"] = 10,
-    ["Greater Fire Protection Potion"] = 10,
+    ["Goblin Sapper Charge"] = 20,
+    ["Great Rage Potion"] = 10,
+    ["Greater Arcane Protection Potion"] = 5,
+    ["Greater Fire Protection Potion"] = 5,
     ["Greater Frost Protection Potion"] = 10,
+    ["Greater Nature Protection Potion"] = 5,
     ["Greater Shadow Protection Potion"] = 10,
-    ["Greater Stoneshield Potion"] = 15,
-    ["Limited Invulnerability Potion"] = 10,
-    ["Living Action Potion"] = 5,
+    ["Greater Stoneshield Potion"] = 10,
+    ["Ice Thistle E'ko"] = 20,
+    ["Limited Invulnerability Potion"] = 5,
     ["Major Healing Potion"] = 10,
-    ["Mighty Rage Potion"] = 10,
+    ["Mighty Rage Potion"] = 15,
     ["Oil of Immolation"] = 10,
-    ["Powerful Anti-Venom"] = 10,
     ["Rumsey Rum Black Label"] = 10,
+    ["Scorpok Pincer"] = 20,
+    ["Shardtooth E'ko"] = 20,
     ["Smoked Desert Dumplings"] = 20,
+    ["Snickerfang Jowl"] = 20,
     ["Swiftness Potion"] = 5,
+    ["Winterfall E'ko"] = 20,
     ["Winterfall Firewater"] = 10,
   },
   ["junsa raid"] = {
@@ -204,6 +219,7 @@ local FULL_ITEMS = {
     ["Rumsey Rum Black Label"] = 10,
     ["Elemental Sharpening Stone"] = 20,
     ["Dense Weightstone"] = 20,
+    ["Dense Sharpening Stone"] = 20,
     ["Greater Stoneshield Potion"] = 10,
     ["Major Healing Potion"] = 10,
     ["Mighty Rage Potion"] = 10,
@@ -212,7 +228,8 @@ local FULL_ITEMS = {
     ["Dense Dynamite"] = 20,
     ["Goblin Sapper Charge"] = 10,
     ["Winterfall Firewater"] = 10,
-    ["Limited Invulnerability Potion"] = 5
+    ["Limited Invulnerability Potion"] = 5,
+    ["Gift of Arthas"] = 5
   },
   ["junsa mc"] = {
     ["Living Action Potion"] = 5,
@@ -259,6 +276,7 @@ local FULL_ITEMS = {
     ["Frozen Rune"] = 20,
   },
   ["junsa naxxa"] = {
+    ["Swiftness Potion"] = 5,
     ["Greater Arcane Protection Potion"] = 5,
     ["Greater Shadow Protection Potion"] = 10,
     ["Greater Frost Protection Potion"] = 10,
@@ -631,8 +649,8 @@ end
 
 local function GetFreeSlot()
   for b = 0,4 do
-    for s = 1, GetContainerNumSlots(b) do
-      if not GetContainerItemLink(b, s) then
+    for s = 1, C_Container.GetContainerNumSlots(b) do
+      if not C_Container.GetContainerItemLink(b, s) then
         return b, s
       end
     end
@@ -643,8 +661,8 @@ end
 
 local function GetFreeBankSlot()
   for _, b in ipairs({-1, 5, 6, 7, 8, 9, 10}) do
-    for s = 1, GetContainerNumSlots(b) do
-      if not GetContainerItemLink(b, s) then
+    for s = 1, C_Container.GetContainerNumSlots(b) do
+      if not C_Container.GetContainerItemLink(b, s) then
         return b, s
       end
     end
@@ -655,8 +673,8 @@ end
 
 local function SplitItem(bag, slot, count)
   local freeBag, freeSlot = GetFreeSlot()
-  SplitContainerItem(bag, slot, count)
-  PickupContainerItem(freeBag, freeSlot)
+  C_Container.SplitContainerItem(bag, slot, count)
+  C_Container.PickupContainerItem(freeBag, freeSlot)
 end
 
 function dump(o)
@@ -679,13 +697,13 @@ local function GetStacks(itemLink)
   if itemLink then
     local _, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
     for bag = 0,4 do
-      for slot = 1, GetContainerNumSlots(bag) do
-        local _, count, _, _, _, _, link = GetContainerItemInfo(bag, slot)
-        if itemLink == link then
-          if count == stackCount then
-            fullStacks[#fullStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
+      for slot = 1, C_Container.GetContainerNumSlots(bag) do
+        local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
+        if containerInfo and itemLink == containerInfo.hyperlink then
+          if containerInfo.stackCount == stackCount then
+            fullStacks[#fullStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=containerInfo.stackCount}
           else
-            partialStacks[#partialStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
+            partialStacks[#partialStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=containerInfo.stackCount}
           end
         end
       end
@@ -702,10 +720,10 @@ local function GetBankStacks(itemLink)
   if itemLink then
     local _, _, _, _, _, _, _, stackCount, _, _, _ = GetItemInfo(itemLink)
     for _, bag in ipairs({-1, 5, 6, 7, 8, 9, 10}) do
-      for slot = 1, GetContainerNumSlots(bag) do
-        local _, count, _, _, _, _, link = GetContainerItemInfo(bag, slot)
-        if itemLink == link then
-          if count == stackCount then
+      for slot = 1, C_Container.GetContainerNumSlots(bag) do
+        local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
+        if containerInfo and itemLink == containerInfo.hyperlink then
+          if containerInfo.stackCount == stackCount then
             fullStacks[#fullStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
           else
             partialStacks[#partialStacks+1] = {['bag']=bag, ['slot']=slot, ['count']=count}
@@ -757,7 +775,7 @@ local function FillItems(needItems)
       local fullStacks, partialStacks = GetStacks(itemLink)
       for i, v in ipairs(fullStacks) do
         if needCount - fillCount >= v['count'] and mailSlotsSize > 0 then
-          UseContainerItem(v['bag'], v['slot'])
+          C_Container.UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
           mailSlotsSize = mailSlotsSize - 1
         end
@@ -765,7 +783,7 @@ local function FillItems(needItems)
 
       for i, v in ipairs(partialStacks) do
         if needCount - fillCount == v['count'] and mailSlotsSize > 0 then
-          UseContainerItem(v['bag'], v['slot'])
+          C_Container.UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
           mailSlotsSize = mailSlotsSize - 1
         end
@@ -773,7 +791,7 @@ local function FillItems(needItems)
 
       for i, v in ipairs(partialStacks) do
         if needCount - fillCount > v['count'] and mailSlotsSize > 0 then
-          UseContainerItem(v['bag'], v['slot'])
+          C_Container.UseContainerItem(v['bag'], v['slot'])
           fillCount = fillCount + v['count']
           mailSlotsSize = mailSlotsSize - 1
         end
@@ -837,10 +855,10 @@ local function GetBagItemsCount(itemLink)
 
   if itemLink then
     for bag = 0,4 do
-      for slot = 1, GetContainerNumSlots(bag) do
-        local _, count, _, _, _, _, link = GetContainerItemInfo(bag, slot)
-        if itemLink == link then
-          result = result + count
+      for slot = 1, C_Container.GetContainerNumSlots(bag) do
+        local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
+        if containerInfo and itemLink == containerInfo.hyperlink then
+          result = result + containerInfo.stackCount
         end
       end
     end
@@ -854,10 +872,10 @@ local function GetBankItemsCount(itemLink)
 
   if itemLink then
     for _, bag in ipairs({-1, 5, 6, 7, 8, 9, 10}) do
-      for slot = 1, GetContainerNumSlots(bag) do
-        local _, count, _, _, _, _, link = GetContainerItemInfo(bag, slot)
-        if itemLink == link then
-          result = result + count
+      for slot = 1, C_Container.GetContainerNumSlots(bag) do
+        local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
+        if containerInfo and itemLink == containerInfo.hyperlink then
+          result = result + containerInfo.stackCount
         end
       end
     end
@@ -874,40 +892,39 @@ local function OrganizeStock()
 
     if bagCount > fullCount then
       local fullStacksBag, partialStacksBag = GetStacks(itemLink)
-      local fullStacksBank, partialStacksBank = GetBankStacks(itemLink)
       local moveCount = bagCount - fullCount
 
       if #fullStacksBag > 0 and moveCount >= stackCount then
-        PickupContainerItem(fullStacksBag[1]['bag'], fullStacksBag[1]['slot'])
+        C_Container.PickupContainerItem(fullStacksBag[1]['bag'], fullStacksBag[1]['slot'])
 
         local freeBag, freeSlot = GetFreeBankSlot()
-        PickupContainerItem(freeBag, freeSlot)
+        C_Container.PickupContainerItem(freeBag, freeSlot)
         return true
       elseif moveCount >= partialStacksBag[1]['count'] then
-        PickupContainerItem(partialStacksBag[1]['bag'], partialStacksBag[1]['slot'])
+        C_Container.PickupContainerItem(partialStacksBag[1]['bag'], partialStacksBag[1]['slot'])
 
         local freeBag, freeSlot = GetFreeBankSlot()
-        PickupContainerItem(freeBag, freeSlot)
+        C_Container.PickupContainerItem(freeBag, freeSlot)
         return true
       else
         SplitItem(partialStacksBag[1]['bag'], partialStacksBag[1]['slot'], moveCount)
         return true
       end
     elseif bagCount < fullCount and bankCount > 0 then
-      local fullStacksBag, partialStacksBag = GetStacks(itemLink)
+      local _, partialStacksBag = GetStacks(itemLink)
       local fullStacksBank, partialStacksBank = GetBankStacks(itemLink)
 
       if #partialStacksBank > 0 then
-        PickupContainerItem(partialStacksBank[1]['bag'], partialStacksBank[1]['slot'])
+        C_Container.PickupContainerItem(partialStacksBank[1]['bag'], partialStacksBank[1]['slot'])
       else
-        PickupContainerItem(fullStacksBank[1]['bag'], fullStacksBank[1]['slot'])
+        C_Container.PickupContainerItem(fullStacksBank[1]['bag'], fullStacksBank[1]['slot'])
       end
 
       if #partialStacksBag > 0 then
-        PickupContainerItem(partialStacksBag[1]['bag'], partialStacksBag[1]['slot'])
+        C_Container.PickupContainerItem(partialStacksBag[1]['bag'], partialStacksBag[1]['slot'])
       else
         local freeBag, freeSlot = GetFreeSlot()
-        PickupContainerItem(freeBag, freeSlot)
+        C_Container.PickupContainerItem(freeBag, freeSlot)
       end
 
       return true
@@ -946,19 +963,6 @@ local function PrintStock()
 	text:SetFullHeight(true)
   text:SetText(message)
 	window:AddChild(text)
-end
-
-function dump(o)
-  if type(o) == 'table' then
-     local s = '{ '
-     for k,v in pairs(o) do
-        if type(k) ~= 'number' then k = '"'..k..'"' end
-        s = s .. '['..k..'] = ' .. dump(v) .. ','
-     end
-     return s .. '} '
-  else
-     return tostring(o)
-  end
 end
 
 local function RaidConsumableHandler(inSubject)
